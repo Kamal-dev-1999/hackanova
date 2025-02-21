@@ -2,6 +2,9 @@ import spacy
 import re
 from webapp.models import Summary,Video
 from django.shortcuts import render
+import os
+from django.conf import settings
+
 
 def action_words(request, video_id):
     video = Video.objects.get(id=video_id)
@@ -42,3 +45,32 @@ def action_words(request, video_id):
 
     # render template
     return render(request, 'action_words.html', context)
+
+
+def show_original_transcript(request, video_id):
+    # Retrieve the video object
+    try:
+        video = Video.objects.get(id=video_id)
+    except Video.DoesNotExist:
+        return render(request, 'error.html', {'message': 'Video not found.'})
+    
+    # (Optional) load spaCy if you need to do additional text processing
+    nlp = spacy.load("en_core_web_sm")
+    
+    # Build the full file path for the transcript file
+    file_path = os.path.join(settings.BASE_DIR, f'media/main/videos/{video.title}.txt')
+    
+    # Read the transcript content
+    try:
+        with open(file_path, 'r', encoding='utf-8') as f:
+            transcript = f.read()
+    except FileNotFoundError:
+        transcript = "Transcript not found."
+    
+    # Prepare the context for rendering
+    context = {
+        'video': video,
+        'transcript': transcript,
+    }
+    
+    return render(request, 'show_transcript.html', context)

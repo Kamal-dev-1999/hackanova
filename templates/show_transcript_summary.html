@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Transcript Summary - {{ video.title }}</title>
+    {% load static %}
+    <!-- Include Bootstrap CSS -->
+    <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}">
+    <style>
+        pre.transcript, pre.summary {
+            white-space: pre-wrap;       /* Preserve whitespace and wrap long lines */
+            word-wrap: break-word;       /* IE compatibility */
+            background-color: #f8f9fa;   /* Light gray background */
+            border: 1px solid #dee2e6;   /* Subtle border */
+            padding: 15px;
+            border-radius: 5px;
+        }
+        .section-title {
+            margin-top: 30px;
+            margin-bottom: 15px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container my-5">
+        <h1 class="mb-4">Transcript &amp; Summary: {{ video.title }}</h1>
+        
+        <h2 class="section-title">Original Transcript</h2>
+        <div class="card mb-4">
+            <div class="card-body">
+                <pre class="transcript">{{ transcript }}</pre>
+            </div>
+        </div>
+        
+        <h2 class="section-title">Summary</h2>
+        <div class="card">
+            <div class="card-body">
+                <pre class="summary">{{ summary }}</pre>
+            </div>
+        </div>
+        
+        <div class="mt-4">
+            <a href="{% url 'dashboard' %}" class="btn btn-primary">Back to Dashboard</a>
+        </div>
+    </div>
+    
+    <!-- Optional: Include Bootstrap JS Bundle -->
+    <script src="{% static 'js/bootstrap.bundle.min.js' %}"></script>
+</body>
+</html>

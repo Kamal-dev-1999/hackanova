@@ -1,71 +1,140 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>summary display</title>
-    {% load static %}
-    <link rel="stylesheet" href="{% static 'css/translate.css'%}">
+  <meta charset="UTF-8">
+  <title>Translation and Speech</title>
+  {% load static %}
+  <link rel="stylesheet" href="{% static 'css/translate.css' %}">
 </head>
-
 <body>
-    <div class="upper_banner">
-        <div class="banleft"><a style="background: none;"> Translator </a></div>
-        <a href="/dashboard/">
-            <div class="ban_right" style="margin-left: 345px;"> <img src="{% static 'img/back.png' %}"> </div>
-        </a>
-
-
+  <div class="upper_banner">
+    <div class="banleft">
+      <a style="background: none;">Translator</a>
     </div>
+    <a href="/dashboard/">
+      <div class="ban_right" style="margin-left: 345px;"> 
+        <img src="{% static 'img/back.png' %}" alt="Back">
+      </div>
+    </a>
+  </div>
 
-    <div class="lower_body">
-        <h1> Metaverse: </h1>
-
-        <div class="paragraph">
-
-            <div class="para_in">
-                <div class="og"> Original </div>
-                <div class="tr"> Translated </div>
-
-                <div class="para_in_l">
-                    {{summary_text}}
-                </div>
-                <div class="para_seperator"></div>
-                <div class="para_in_r">
-                </div>
-
-
-
-            </div>
+  <div class="lower_body">
+    <h1>Metaverse:</h1>
+    <div class="paragraph">
+      <div class="para_in">
+        <div class="og">Original</div>
+        <div class="tr">Translated</div>
+        <div class="para_in_l">
+          {{ summary_text }}
         </div>
-        <div class="line"></div>
-    </div>
-
-    <form method="POST" action="/translate/{{ summary_id }}/">
-        {% csrf_token %}
-        <button class="translator" type="submit">Translate</button>
-
-        <div class="details">
-            <h2>Enter the language you want to translate to: </h2>
-            <input type="text" name="language" id="language" required>
+        <div class="para_seperator"></div>
+        <div class="para_in_r">
+          <!-- Always include this container for the translated text -->
+          <div id="translated-text">
+            {% if translated %}
+              {{ out }}
+            {% else %}
+              <!-- No translation yet -->
+            {% endif %}
+          </div>
         </div>
-    </form>
-    <!--   </form>-->
-    <!-- <h2>Original length: 3000 words</h2>
-        <h2>Summary Length: 500 words</h2>
-        <h2>Created on: 6 January</h2> -->
-
+      </div>
     </div>
+    <div class="line"></div>
+  </div>
 
-    <!-- <div class="action_points"> <a href=""> Action points </a> </div> -->
+  <!-- Translation Form -->
+  <form method="POST" action="/translate/{{ summary_id }}/">
+    {% csrf_token %}
+    <div class="details">
+      <h2>Enter the language you want to translate to:</h2>
+      <input type="text" name="language" id="language" required>
+    </div>
+    <button class="translator" type="submit">Translate</button>
+  </form>
 
+  <!-- Display the Convert to Speech button only if translation exists -->
+  {% if translated %}
+    <button class="speech-button" onclick="speakText()">Convert to Speech</button>
+  {% endif %}
 
-
-
-
-
+  <script>
+    // Stop ongoing speech if the language selection changes
+    document.getElementById('language').addEventListener('change', function() {
+      console.log("Language changed; stopping current speech.");
+      window.speechSynthesis.cancel();
+    });
+  
+    function speakText() {
+      var translatedElem = document.getElementById('translated-text');
+      if (!translatedElem) {
+        console.error("Element with id 'translated-text' not found.");
+        return;
+      }
+      var text = translatedElem.innerText;
+      console.log("Fetched translated text:", text);
+      if (!text.trim()) {
+        console.error("Translated text is empty.");
+        return;
+      }
+      
+      // Get language from the input
+      let userLanguage = document.getElementById('language').value;
+      
+      // Array of supported languages
+      const supportedLanguages = [
+        "hi-IN",  // Hindi
+        "bn-IN",  // Bengali
+        "ta-IN",  // Tamil
+        "te-IN",  // Telugu
+        "mr-IN",  // Marathi
+        "gu-IN",  // Gujarati
+        "kn-IN",  // Kannada
+        "ml-IN",  // Malayalam
+        "pa-IN",  // Punjabi
+        "or-IN",  // Odia
+        "as-IN",  // Assamese
+        "sa-IN",  // Sanskrit
+        "en-US"   // US English
+      ];
+      
+      let selectedLang = null;
+      for (let i = 0; i < supportedLanguages.length; i++) {
+        if (supportedLanguages[i] === userLanguage) {
+          selectedLang = supportedLanguages[i];
+          break;
+        }
+      }
+      if (!selectedLang) {
+        selectedLang = supportedLanguages[0];
+      }
+      
+      var utterance = new SpeechSynthesisUtterance(text);
+      utterance.lang = selectedLang;
+      
+      var voices = window.speechSynthesis.getVoices();
+      var matchedVoice = voices.find(function(voice) {
+        return voice.lang === selectedLang;
+      });
+      if (!matchedVoice && selectedLang.indexOf('-') > -1) {
+        var langPrefix = selectedLang.split('-')[0];
+        matchedVoice = voices.find(function(voice) {
+          return voice.lang.toLowerCase().startsWith(langPrefix.toLowerCase());
+        });
+      }
+      if (matchedVoice) {
+        utterance.voice = matchedVoice;
+        console.log("Using voice:", matchedVoice.name, matchedVoice.lang);
+      } else {
+        console.warn("No matching voice found for", selectedLang, "; using default voice.");
+      }
+      
+      window.speechSynthesis.cancel(); // Cancel any ongoing speech
+      window.speechSynthesis.speak(utterance);
+    }
+  </script>
+  
+  
+  
 </body>
-
 </html>

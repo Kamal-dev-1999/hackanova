@@ -14,6 +14,7 @@ class UserProfile(models.Model):
     email = models.EmailField(default='')
     password = models.CharField(max_length=100,default='')
     video_file = models.FileField(upload_to="main/videos",default='default_value')
+    is_premium = models.BooleanField(default=False)  # New field: premium status
    # id = models.ObjectIdField(primary_key=True)
 
     def __str__(self):

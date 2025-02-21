@@ -14,7 +14,9 @@ from django.contrib.auth import views as auth_views
 from django.views.generic import RedirectView
 from webapp.views.translate import translator,tt
 from webapp.views.attendees import upload,display
-from webapp.views.action_words import action_words
+from webapp.views.action_words import action_words, show_original_transcript
+
+
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', RedirectView.as_view(url='webapp/', permanent=True)),
@@ -34,4 +36,5 @@ urlpatterns = [
     path('upload_yo/', upload, name='upload'),
     path('display/<int:file_id>/', display, name='display'),
     path('actionpoints/<int:video_id>/',action_words, name='action_words'),
+    path('orignal-transcript/<int:video_id>/',show_original_transcript,name='original_transcript')
 ]+ static(settings.MEDIA_URL,document_root=settings.MEDIA_ROOT)
