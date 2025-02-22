@@ -1,140 +1,249 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>Translation and Speech</title>
-  {% load static %}
-  <link rel="stylesheet" href="{% static 'css/translate.css' %}">
-</head>
-<body>
-  <div class="upper_banner">
-    <div class="banleft">
-      <a style="background: none;">Translator</a>
-    </div>
-    <a href="/dashboard/">
-      <div class="ban_right" style="margin-left: 345px;"> 
-        <img src="{% static 'img/back.png' %}" alt="Back">
-      </div>
-    </a>
-  </div>
-
-  <div class="lower_body">
-    <h1>Metaverse:</h1>
-    <div class="paragraph">
-      <div class="para_in">
-        <div class="og">Original</div>
-        <div class="tr">Translated</div>
-        <div class="para_in_l">
-          {{ summary_text }}
-        </div>
-        <div class="para_seperator"></div>
-        <div class="para_in_r">
-          <!-- Always include this container for the translated text -->
-          <div id="translated-text">
-            {% if translated %}
-              {{ out }}
-            {% else %}
-              <!-- No translation yet -->
-            {% endif %}
-          </div>
-        </div>
-      </div>
-    </div>
-    <div class="line"></div>
-  </div>
-
-  <!-- Translation Form -->
-  <form method="POST" action="/translate/{{ summary_id }}/">
-    {% csrf_token %}
-    <div class="details">
-      <h2>Enter the language you want to translate to:</h2>
-      <input type="text" name="language" id="language" required>
-    </div>
-    <button class="translator" type="submit">Translate</button>
-  </form>
-
-  <!-- Display the Convert to Speech button only if translation exists -->
-  {% if translated %}
-    <button class="speech-button" onclick="speakText()">Convert to Speech</button>
-  {% endif %}
-
-  <script>
-    // Stop ongoing speech if the language selection changes
-    document.getElementById('language').addEventListener('change', function() {
-      console.log("Language changed; stopping current speech.");
-      window.speechSynthesis.cancel();
-    });
-  
-    function speakText() {
-      var translatedElem = document.getElementById('translated-text');
-      if (!translatedElem) {
-        console.error("Element with id 'translated-text' not found.");
-        return;
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Metaverse Translator | Next-gen Localization</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <style>
+      :root {
+        --primary-500: #6366f1;
+        --primary-600: #4f46e5;
+        --text-primary: #1e293b;
       }
-      var text = translatedElem.innerText;
-      console.log("Fetched translated text:", text);
-      if (!text.trim()) {
-        console.error("Translated text is empty.");
-        return;
+
+      .animate-pulse {
+        animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
       }
-      
-      // Get language from the input
-      let userLanguage = document.getElementById('language').value;
-      
-      // Array of supported languages
-      const supportedLanguages = [
-        "hi-IN",  // Hindi
-        "bn-IN",  // Bengali
-        "ta-IN",  // Tamil
-        "te-IN",  // Telugu
-        "mr-IN",  // Marathi
-        "gu-IN",  // Gujarati
-        "kn-IN",  // Kannada
-        "ml-IN",  // Malayalam
-        "pa-IN",  // Punjabi
-        "or-IN",  // Odia
-        "as-IN",  // Assamese
-        "sa-IN",  // Sanskrit
-        "en-US"   // US English
-      ];
-      
-      let selectedLang = null;
-      for (let i = 0; i < supportedLanguages.length; i++) {
-        if (supportedLanguages[i] === userLanguage) {
-          selectedLang = supportedLanguages[i];
-          break;
+
+      @keyframes pulse {
+        0%,
+        100% {
+          opacity: 1;
+        }
+        50% {
+          opacity: 0.5;
         }
       }
-      if (!selectedLang) {
-        selectedLang = supportedLanguages[0];
-      }
-      
-      var utterance = new SpeechSynthesisUtterance(text);
-      utterance.lang = selectedLang;
-      
-      var voices = window.speechSynthesis.getVoices();
-      var matchedVoice = voices.find(function(voice) {
-        return voice.lang === selectedLang;
-      });
-      if (!matchedVoice && selectedLang.indexOf('-') > -1) {
-        var langPrefix = selectedLang.split('-')[0];
-        matchedVoice = voices.find(function(voice) {
-          return voice.lang.toLowerCase().startsWith(langPrefix.toLowerCase());
+    </style>
+  </head>
+  <body class="bg-slate-50 min-h-screen">
+    <!-- Main Content -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-24 pb-12">
+      <div class="bg-white rounded-xl shadow-lg overflow-hidden">
+        <!-- Content Header -->
+        <div class="px-8 py-6 border-b border-slate-100">
+          <div class="flex justify-between items-center">
+            <h1 class="text-2xl font-bold text-slate-800">
+              <i class="fas fa-globe-asia text-primary-500 mr-3"></i>
+              Translation Interface
+            </h1>
+            <a
+              href="/dashboard"
+              class="flex items-center text-slate-500 hover:text-primary-500 transition-colors"
+            >
+              <i class="fas fa-arrow-left mr-2"></i>
+              Back to Dashboard
+            </a>
+          </div>
+        </div>
+
+        <!-- Translation Panels -->
+        <div class="grid lg:grid-cols-2 gap-8 p-8">
+          <!-- Original Text Panel -->
+          <div class="bg-slate-50 rounded-lg p-6 h-96 overflow-y-auto">
+            <div class="flex items-center justify-between mb-4">
+              <h3 class="font-semibold text-slate-700">
+                <i class="fas fa-comment-dots text-primary-500 mr-2"></i>
+                Original Text
+              </h3>
+              <span class="text-sm text-slate-500"
+                >{{ summary_text|wordcount }} words</span
+              >
+            </div>
+            <div class="prose text-slate-600">{{ summary_text }}</div>
+          </div>
+
+          <!-- Translated Text Panel -->
+          <div class="bg-primary-50 rounded-lg p-6 h-96 overflow-y-auto">
+            <div class="flex items-center justify-between mb-4">
+              <h3 class="font-semibold text-slate-700">
+                <i class="fas fa-language text-primary-500 mr-2"></i>
+                Translated Text
+              </h3>
+              <div class="flex items-center space-x-3">
+                {% if translated %}
+                <button
+                  onclick="speakText()"
+                  class="text-primary-500 hover:text-primary-600 transition-colors tooltip"
+                >
+                  <i class="fas fa-volume-up"></i>
+                  <span class="tooltiptext">Text-to-Speech</span>
+                </button>
+                {% endif %}
+              </div>
+            </div>
+            <div id="translated-text" class="prose text-slate-600">
+              {% if translated %}{{ out }}{% endif %}
+            </div>
+          </div>
+        </div>
+
+        <!-- Translation Controls -->
+        <div class="px-8 py-6 border-t border-slate-100">
+          <form
+            method="POST"
+            action="/translate/{{ summary_id }}/"
+            class="max-w-2xl mx-auto"
+          >
+            {% csrf_token %}
+            <div class="flex gap-4">
+              <div class="flex-1">
+                
+                <div class="relative max-w-2xl mx-auto">
+                  <form method="POST" action="/translate/{{ summary_id }}/" class="space-y-6">
+                    {% csrf_token %}
+                    <div class="details">
+                      <div class="space-y-2">
+                        <label for="language" class="block text-sm font-medium text-slate-700">
+                          <i class="fas fa-globe mr-2 text-primary-500"></i>
+                          Target Language
+                        </label>
+                        
+                        <div class="relative">
+                          <input 
+                            type="text" 
+                            name="language" 
+                            id="language"
+                            required
+                            placeholder="Enter language code (e.g., fr-FR, es-ES)"
+                            class="w-full pl-10 pr-4 py-3 rounded-lg border border-slate-300 focus:border-primary-500 focus:ring-2 focus:ring-primary-200 transition-all duration-200"
+                            aria-describedby="language-help"
+                          >
+                          
+                          <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <i class="fas fa-comments text-slate-400"></i>
+                          </div>
+                        </div>
+                        
+                        <p id="language-help" class="mt-1 text-sm text-slate-500">
+                          Supported languages: en-US, hi-IN, es-ES, fr-FR, de-DE, ja-JP
+                        </p>
+                      </div>
+                    </div>
+                
+                    <button 
+                      type="submit" 
+                      class="w-full sm:w-auto px-6 py-3 bg-gradient-to-r from-primary-500 to-primary-600 hover:from-primary-600 hover:to-primary-700 text-black rounded-lg font-medium transition-all duration-200 transform hover:scale-[1.02] shadow-md hover:shadow-lg flex items-center justify-center gap-2"
+                    >
+                      <i class="fas fa-sync-alt"></i>
+                      Translate Now
+                    </button>
+                  </form>
+                </div>
+              <div class="self-end">
+                <button
+                  type="submit"
+                  class="px-6 py-3 bg-primary-500 hover:bg-primary-600 text-white rounded-lg font-medium transition-colors flex items-center"
+                >
+                  <i class="fas fa-sync-alt mr-2"></i>
+                  Translate Now
+                </button>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+    </main>
+
+    <!-- Scripts -->
+    <script>
+      // Stop ongoing speech if the language selection changes
+      document
+        .getElementById("language")
+        .addEventListener("change", function () {
+          console.log("Language changed; stopping current speech.");
+          window.speechSynthesis.cancel();
         });
+
+      function speakText() {
+        var translatedElem = document.getElementById("translated-text");
+        if (!translatedElem) {
+          console.error("Element with id 'translated-text' not found.");
+          return;
+        }
+        var text = translatedElem.innerText;
+        console.log("Fetched translated text:", text);
+        if (!text.trim()) {
+          console.error("Translated text is empty.");
+          return;
+        }
+
+        // Get language from the input
+        let userLanguage = document.getElementById("language").value;
+
+        // Array of supported languages
+        const supportedLanguages = [
+          "hi-IN", // Hindi
+          "bn-IN", // Bengali
+          "ta-IN", // Tamil
+          "te-IN", // Telugu
+          "mr-IN", // Marathi
+          "gu-IN", // Gujarati
+          "kn-IN", // Kannada
+          "ml-IN", // Malayalam
+          "pa-IN", // Punjabi
+          "or-IN", // Odia
+          "as-IN", // Assamese
+          "sa-IN", // Sanskrit
+          "en-US", // US English
+        ];
+
+        let selectedLang = null;
+        for (let i = 0; i < supportedLanguages.length; i++) {
+          if (supportedLanguages[i] === userLanguage) {
+            selectedLang = supportedLanguages[i];
+            break;
+          }
+        }
+        if (!selectedLang) {
+          selectedLang = supportedLanguages[0];
+        }
+
+        var utterance = new SpeechSynthesisUtterance(text);
+        utterance.lang = selectedLang;
+
+        var voices = window.speechSynthesis.getVoices();
+        var matchedVoice = voices.find(function (voice) {
+          return voice.lang === selectedLang;
+        });
+        if (!matchedVoice && selectedLang.indexOf("-") > -1) {
+          var langPrefix = selectedLang.split("-")[0];
+          matchedVoice = voices.find(function (voice) {
+            return voice.lang
+              .toLowerCase()
+              .startsWith(langPrefix.toLowerCase());
+          });
+        }
+        if (matchedVoice) {
+          utterance.voice = matchedVoice;
+          console.log("Using voice:", matchedVoice.name, matchedVoice.lang);
+        } else {
+          console.warn(
+            "No matching voice found for",
+            selectedLang,
+            "; using default voice."
+          );
+        }
+
+        window.speechSynthesis.cancel(); // Cancel any ongoing speech
+        window.speechSynthesis.speak(utterance);
       }
-      if (matchedVoice) {
-        utterance.voice = matchedVoice;
-        console.log("Using voice:", matchedVoice.name, matchedVoice.lang);
-      } else {
-        console.warn("No matching voice found for", selectedLang, "; using default voice.");
-      }
-      
-      window.speechSynthesis.cancel(); // Cancel any ongoing speech
-      window.speechSynthesis.speak(utterance);
-    }
-  </script>
-  
-  
-  
-</body>
+    </script>
+  </body>
 </html>

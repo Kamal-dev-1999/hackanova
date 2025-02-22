@@ -15,8 +15,9 @@ from django.views.generic import RedirectView
 from webapp.views.translate import translator,tt
 from webapp.views.attendees import upload,display
 from webapp.views.action_words import action_words, show_original_transcript
-
-
+from .views.permium import *
+from .views.custom_model import *
+from .views.gesture_recog import run_model_8053
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', RedirectView.as_view(url='webapp/', permanent=True)),
@@ -36,5 +37,9 @@ urlpatterns = [
     path('upload_yo/', upload, name='upload'),
     path('display/<int:file_id>/', display, name='display'),
     path('actionpoints/<int:video_id>/',action_words, name='action_words'),
-    path('orignal-transcript/<int:video_id>/',show_original_transcript,name='original_transcript')
+    path('orignal-transcript/<int:video_id>/',show_original_transcript,name='original_transcript'),
+    path('upgrade/', upgrade_account, name='upgrade'),
+    path('upgrade/success/', upgrade_success, name='upgrade_success'),
+    path('streamlit/',run_custom_model_streamlit,name="custom"),
+    path('8053/',run_model_8053,name="8053")
 ]+ static(settings.MEDIA_URL,document_root=settings.MEDIA_ROOT)

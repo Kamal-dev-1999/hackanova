@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'webapp',
+    # 'custom_model'
 ]
 
 MIDDLEWARE = [
@@ -74,7 +75,8 @@ WSGI_APPLICATION = 'deepblue.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/3.2/ref/settings/#databases
-
+# Add these settings at the bottom
+LOGIN_URL = '/login/'  # This enforces the exact URL you want
 DATABASES = {
 	'default': {
 		'ENGINE': 'django.db.backends.mysql', 

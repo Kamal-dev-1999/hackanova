@@ -83,4 +83,3 @@ def summary_view(request, summary_id):
         'summary_transcript': summary_transcript,
     }
     return render(request, 'summary_list.html', context)
-

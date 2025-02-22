@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="upgrade-container">
+    <h2>Upgrade to Premium</h2>
+    <div class="premium-benefits">
+        <h3>Premium Benefits:</h3>
+        <ul>
+            <li>Unlimited video transcriptions</li>
+            <li>Priority processing</li>
+            <li>Translation features</li>
+            <li>Advanced export options</li>
+        </ul>
+    </div>
+    
+    <form method="post">
+        {% csrf_token %}
+        <div class="form-section">
+            <h3>Payment Information</h3>
+            {{ form.as_p }}
+        </div>
+        <button type="submit" class="btn btn-premium">Upgrade Now ($9.99/month)</button>
+    </form>
+</div>
+{% endblock %}

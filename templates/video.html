@@ -1,55 +1,77 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>summary display</title>
+    <title>{{ video.title }} - Video</title>
     {% load static %}
-    <link rel="stylesheet" href="{%static 'css/video.css' %}">
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 
-<body>
-    <div class="upper_banner">
-        <div class="banleft"><a style="background: none;"> Upload's </a></div>
-        <a href="/dashboard/">
-            <div class="ban_right" style="margin-left: 345px;"> <img src="{% static 'img/back.png'%}"> </div>
-        </a>
+<body class="bg-gray-50">
+    <!-- Header Section -->
+    <header class="bg-white shadow-sm px-6 py-4 flex items-center justify-between">
+        <div class="flex items-center space-x-4">
+            <a href="/dashboard/" class="text-blue-600 hover:text-blue-800 flex items-center">
+                <i class="fas fa-arrow-left mr-2"></i>
+                <span class="font-medium">Back to Dashboard</span>
+            </a>
+        </div>
+        <h1 class="text-xl font-bold text-gray-800">Video Details</h1>
+    </header>
 
+    <!-- Main Content -->
+    <main class="max-w-4xl mx-auto p-6">
+        <!-- Title Section -->
+        <div class="mb-6 text-center">
+            <h1 class="text-3xl font-bold text-gray-800 mb-2">{{ video.title }}</h1>
+            <span class="text-gray-500">
+                Uploaded on {{ video.upload_date|date:"F j, Y" }}
+            </span>
+        </div>
 
-    </div>
-
-    <div class="lower_body">
-        <h1> {{video.title}} </h1>
-
-        <div class="paragraph">
-
-            <div class="para_in">
-
-                <video src="{{ video.video_file.url }}" controls></video>
+        <!-- Video Player -->
+        <div class="bg-white rounded-xl shadow-md p-4 mb-8">
+            <div class="aspect-w-16 aspect-h-9 rounded-lg overflow-hidden">
+                <video 
+                    class="w-full" 
+                    controls
+                    poster="{% static 'img/video-thumbnail.jpg' %}"
+                >
+                    <source src="{{ video.video_file.url }}" type="video/mp4">
+                    Your browser does not support the video tag.
+                </video>
             </div>
         </div>
-        <div class="line"></div>
-    </div>
 
-    <div class="details">
-        <!-- <h2>Meeting Duration: 120 minutes</h2>
-        <h2>Original length: 3000 words</h2>
-        <h2>Summary Length: 500 words</h2>
-        <h2>Created on: 6 January</h2> -->
-        <div class="tryend"><a href="{% url 'summary' video_id=video.id %}"> Summary </a></div>
+        <!-- Action Button -->
+        <div class="text-center">
+            <a href="{% url 'summary' video_id=video.id %}" 
+               class="inline-flex items-center bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg transition-colors">
+                <i class="fas fa-file-alt mr-2"></i>
+                Generate Summary
+            </a>
+        </div>
 
-
-
-
-    </div>
-
-
-
-
-
-
+        <!-- Metadata -->
+        <div class="mt-8 bg-white rounded-xl shadow-md p-6">
+            <div class="grid grid-cols-2 gap-4 text-gray-700">
+                <div class="flex items-center">
+                    <i class="fas fa-calendar-alt mr-2 text-blue-600"></i>
+                    <span>Upload Date:</span>
+                    <span class="font-medium ml-2">{{ video.upload_date|date:"M d, Y" }}</span>
+                </div>
+                <div class="flex items-center">
+                    <i class="fas fa-file-video mr-2 text-blue-600"></i>
+                    <span>File Type:</span>
+                    <span class="font-medium ml-2">{{ video.file_type }}</span>
+                </div>
+            </div>
+        </div>
+    </main>
 </body>
-
 </html>
