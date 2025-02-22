@@ -9,36 +9,34 @@ from django.shortcuts import render, redirect
 from django.views import View
 from webapp.models import UserProfile
 
+from django.contrib.auth import get_user_model
+
+User = get_user_model()
 class Login(View):
-    return_url = None
-    
     def get(self, request):
-        Login.return_url = request.GET.get('return_url')
+        if request.session.get('user_id'):
+            return redirect('dashboard')
         return render(request, 'login.html')
-    
+
     def post(self, request):
-        email = request.POST.get('email')
+        email = request.POST.get('email').strip().lower()  # Normalize email
         password = request.POST.get('password')
-        user = UserProfile.get_user_by_email(email)
-        next_url = request.GET.get('next')
-        error_message = None
-        if user:
-            flag = check_password(password, user.password)
-            if flag:
-                # Set the user_id value in the session object
+        
+        try:
+            user = UserProfile.objects.get(email=email)
+            if check_password(password, user.password):
                 request.session['user_id'] = user.id
+                request.session['email'] = user.email
                 
-                if Login.return_url:
-                    return redirect(Login.return_url)
-                else:
-                    Login.return_url = None
-                    return redirect('dashboard')
-            else:
-                error_message = 'Invalid password!'
-        else:
-            error_message = 'Invalid email!'
-        context = {'next': next_url}
-        return render(request, 'login.html', {'error': error_message}, context)
+                # Debugging check
+                print(f"Session after login: {dict(request.session)}")
+                
+                next_url = request.GET.get('dashboard') or 'dashboard'
+                return redirect(next_url)
+                
+            return render(request, 'login.html', {'error': 'Invalid password'})
+        except UserProfile.DoesNotExist:
+            return render(request, 'login.html', {'error': 'Email not registered'})
 
 def logout(request):
     request.session.clear()

@@ -1,58 +1,89 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>summary display</title>
-    {% load static %}
-    <link rel="stylesheet" href="{% static 'css/translate.css'%}">
+  <meta charset="UTF-8">
+  <title>Translation and Speech</title>
+  {% load static %}
+  <link rel="stylesheet" href="{% static 'css/translate.css' %}">
 </head>
-
 <body>
-    <div class="upper_banner">
-        <div class="banleft"><a style="background: none;"> Translator </a></div>
-        <a href="/dashboard/">
-            <div class="ban_right" style="margin-left: 345px;"> <img src="{% static 'img/back.png' %}"> </div>
-        </a>
-
-
+  <div class="upper_banner">
+    <div class="banleft">
+      <a style="background: none;">Translator</a>
     </div>
+    <a href="/dashboard/">
+      <div class="ban_right" style="margin-left: 345px;"> 
+        <img src="{% static 'img/back.png' %}" alt="Back">
+      </div>
+    </a>
+  </div>
 
-    <div class="lower_body">
-        <h1> {{title}} </h1>
-
-        <div class="paragraph" style="margin-left: 230px;">
-
-            <div class="para_in">
-                <div class="og"> Original </div>
-                <div class="tr"> Translated </div>
-
-                <div class="para_in_l">
-                    {{summary_text}}
-                </div>
-                <div class="para_seperator"></div>
-                <div class="para_in_r">
-                    {{out}}
-                </div>
-
-
-
-            </div>
+  <div class="lower_body">
+    <h1>Metaverse:</h1>
+    <div class="paragraph">
+      <div class="para_in">
+        <div class="og">Original</div>
+        <div class="tr">Translated</div>
+        <div class="para_in_l">
+          {{ summary_text }}
         </div>
-        <!-- <div class="line"></div> -->
+        <div class="para_seperator"></div>
+        <div class="para_in_r">
+          <!-- Display the translated text if available -->
+          <div id="translated-text">
+            {% if translated %}
+              {{ out }}
+            {% endif %}
+          </div>
+        </div>
+      </div>
     </div>
+    <div class="line"></div>
+  </div>
 
+  <!-- Translation Form -->
+  <form method="POST" action="/translate/{{ summary_id }}/">
+    {% csrf_token %}
+    <div class="details">
+      <h2>Enter the language you want to translate to:</h2>
+      <input type="text" name="language" id="language" required>
+    </div>
+    <button class="translator" type="submit">Translate</button>
+  </form>
 
+  <!-- Only display the speech button if translated text is present -->
+  {% if translated %}
+    <button class="speech-button" onclick="speakText()">Convert to Speech</button>
+  {% endif %}
 
-    <!-- <div class="action_points"> <a href=""> Action points </a> </div> -->
+  <script>
+    function speakText() {
+      // Retrieve the translated text from the element
+      var text = document.getElementById('translated-text').innerText;
+      if (!text.trim()) {
+        console.log("No translated text available for speech.");
+        return;
+      }
+      // Get the desired language code from the input, or default to 'en-US'
+      var languageInput = document.getElementById('language');
+      var language = (languageInput && languageInput.value) ? languageInput.value : 'en-US';
 
+      // Create a SpeechSynthesisUtterance with the translated text
+      var utterance = new SpeechSynthesisUtterance(text);
+      utterance.lang = language; // Set the language (e.g., "hi-IN" for Hindi)
 
+      // Optionally, select a matching voice if available
+      var voices = window.speechSynthesis.getVoices();
+      var matchedVoice = voices.find(function(voice) {
+        return voice.lang === language;
+      });
+      if (matchedVoice) {
+        utterance.voice = matchedVoice;
+      }
 
-
-
-
+      // Speak the translated text
+      window.speechSynthesis.speak(utterance);
+    }
+  </script>
 </body>
-
 </html>

@@ -61,12 +61,25 @@ class MyVideosView(View):
             'videos': videos,
         }
         return render(request, 'storage.html', context)
+    
+    
+from django.shortcuts import render, get_object_or_404
+from django.conf import settings
+import os
+
 def summary_view(request, summary_id):
+    summary = get_object_or_404(Summary, id=summary_id)
+    # Assuming your summary object has an attribute (or a way to determine) the file name
+    file_path = os.path.join(settings.BASE_DIR, f'media/summaries/{summary.title}.txt')
+    
     try:
-        summary = Summary.objects.get(id=summary_id)
-    except Summary.DoesNotExist:
-        return render(request, 'summary_not_found.html')
+        with open(file_path, 'r', encoding='utf-8') as f:
+            summary_transcript = f.read()
+    except FileNotFoundError:
+        summary_transcript = "Summary transcript not found."
+    
     context = {
-        'summary':summary
+        'summary': summary,
+        'summary_transcript': summary_transcript,
     }
     return render(request, 'summary_list.html', context)

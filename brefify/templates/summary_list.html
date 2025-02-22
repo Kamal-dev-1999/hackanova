@@ -1,53 +1,107 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>summary display</title>
+    <title>{{ summary.title }} Summary</title>
     {% load static %}
-    <link rel="stylesheet" href="{% static 'css/display.css'%}">
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 
-<body>
-    {% load static %}
-    <div class="upper_banner">
-        <div class="banleft"><a style="background: none;"> Summary </a></div>
-        <a href="/dashboard/">
-            <div class="ban_right" style="margin-left: 345px;"> <img src="{%static 'img/back.png' %}"> </div>
-        </a>
+<body class="bg-gray-50">
+    <!-- Header Section -->
+    <header class="bg-white shadow-sm px-6 py-4 flex items-center justify-between">
+        <div class="flex items-center space-x-4">
+            <a href="/dashboard/" class="text-blue-600 hover:text-blue-800 flex items-center">
+                <i class="fas fa-arrow-left mr-2"></i>
+                <span class="font-medium">Back to Dashboard</span>
+            </a>
+        </div>
+        <h1 class="text-xl font-bold text-gray-800">Summary Details</h1>
+    </header>
 
+    <!-- Main Content -->
+    <main class="max-w-4xl mx-auto p-6">
+        <!-- Title Section -->
+        <div class="mb-8 text-center">
+            <h1 class="text-3xl font-bold text-gray-800 mb-2">{{ summary.title }}</h1>
+            <span class="text-gray-500">
+                Created on {{ summary.generated_date|date:"F j, Y" }}
+            </span>
+        </div>
 
-    </div>
-    {% load static %}
-    <div class="lower_body">
-        <h1> {{summary.title}} </h1>
-
-        <div class="paragraph">
-
-            <div class="para_in">
-                {{summary.summary_text}}
+        <!-- Summary Card -->
+        <div class="bg-white rounded-xl shadow-md p-6 mb-8">
+            <div class="flex items-center justify-between mb-4">
+                <h2 class="text-xl font-semibold text-gray-800">
+                    <i class="fas fa-file-alt text-blue-600 mr-2"></i>
+                    Summary Text
+                </h2>
+                <span class="text-sm text-gray-500">
+                    {{ summary.summary_words }} words
+                </span>
+            </div>
+            <div class="prose max-w-none text-gray-700 leading-relaxed overflow-y-auto max-h-96 border rounded-lg p-4">
+                {{ summary.summary_text }}
             </div>
         </div>
-        <div class="line"></div>
-    </div>
-    <div class="translator"><a href="/translatee/{{summary.id}}/"> Translate </a></div>
-    <div class="details">
-        <h2>Meeting Duration: {{summary.duration}}</h2>
-        <h2>Original length: {{summary.transcript_words}} words</h2>
-        <h2>Summary Length: {{summary.summary_words}} words</h2>
-        <h2>Created on: {{ summary.generated_date|date:"F j, Y" }}</h2>
 
-    </div>
-    <div class="action_points"> <a href="/actionpoints/{{summary.id}}/"> Action points </a> </div>
+        <!-- Stats Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+            <div class="bg-white rounded-xl shadow-md p-4 text-center">
+                <div class="text-blue-600 mb-2">
+                    <i class="fas fa-clock text-2xl"></i>
+                </div>
+                <h3 class="text-sm text-gray-500 mb-1">Meeting Duration</h3>
+                <p class="font-medium text-gray-800">{{ summary.duration }}</p>
+            </div>
 
+            <div class="bg-white rounded-xl shadow-md p-4 text-center">
+                <div class="text-blue-600 mb-2">
+                    <i class="fas fa-file-word text-2xl"></i>
+                </div>
+                <h3 class="text-sm text-gray-500 mb-1">Original Length</h3>
+                <p class="font-medium text-gray-800">{{ summary.transcript_words }} words</p>
+            </div>
 
+            <div class="bg-white rounded-xl shadow-md p-4 text-center">
+                <div class="text-blue-600 mb-2">
+                    <i class="fas fa-compress text-2xl"></i>
+                </div>
+                <h3 class="text-sm text-gray-500 mb-1">Summary Length</h3>
+                <p class="font-medium text-gray-800">{{ summary.summary_words }} words</p>
+            </div>
 
+            <div class="bg-white rounded-xl shadow-md p-4 text-center">
+                <div class="text-blue-600 mb-2">
+                    <i class="fas fa-calendar-check text-2xl"></i>
+                </div>
+                <h3 class="text-sm text-gray-500 mb-1">Created Date</h3>
+                <p class="font-medium text-gray-800">{{ summary.generated_date|date:"M d, Y" }}</p>
+            </div>
+        </div>
 
-
-
-
+        <!-- Action Buttons -->
+        <div class="flex flex-wrap gap-4 justify-center">
+            <a href="/translatee/{{summary.id}}/" 
+               class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg transition-colors flex items-center">
+                <i class="fas fa-language mr-2"></i>Translate
+            </a>
+            
+            {% comment %} <a href="/actionpoints/{{summary.id}}/" 
+               class="bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded-lg transition-colors flex items-center">
+                <i class="fas fa-tasks mr-2"></i>Action Points
+            </a> {% endcomment %}
+            
+            <a href="/orignal-transcript/{{summary.id}}/" 
+               class="bg-gray-600 hover:bg-gray-700 text-white px-6 py-2 rounded-lg transition-colors flex items-center">
+                <i class="fas fa-file-alt mr-2"></i>Show Original
+            </a>
+        </div>
+    </main>
 </body>
-
 </html>

@@ -1,201 +1,337 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-    <meta charset="UTF-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <!-- <link rel="stylesheet" href="dashboard.css" /> -->
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Dashboard</title>
-    {% load static %}
-    <link rel="stylesheet" href="{% static 'css/dashboard.css' %}">
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dashboard</title>
+  {% load static %}
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
 </head>
-
-<body>
-    {% load static %}
-    <div class="main">
-        <div class="main_left">
-            <div class="hierarchy">
-                <div class="title"><a href="/webapp/">DeepBlue</a></div>
-                <div class="line"></div>
-                <div class="elements">
-                    <div class="box">
-                        <div class="but ab" id="but1">
-                            <div class="check">
-                                <img src="{% static 'img/dashboard.png' %}" id="img1" />
-                            </div>
-                            <div class="word">
-                                <a href="javascript:void(0)" id="txt1" onclick="click1()">
-                    Dashboard
-                  </a>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="box">
-                        <div class="but cd" id="but2">
-                            <div class="check"><img src="{% static 'img/summary.png' %}" id="img2" /></div>
-                            <div class="word">
-                                <a href="javascript:void(0)" id="txt2" onclick="click2()">Summary</a
-                  >
+<body class="bg-gray-100">
+  <div class="min-h-screen flex">
+    <!-- Sidebar -->
+    <aside class="w-64 bg-white shadow-lg">
+      <div class="p-6">
+        <a href="/webapp/" class="text-2xl font-bold text-blue-600">ByteCare</a>
+      </div>
+      <nav class="mt-6">
+        <div class="px-6">
+          <hr class="border-gray-200" />
+        </div>
+        <ul class="mt-6 space-y-2">
+          <li>
+            <a href="javascript:void(0)" onclick="click1()" id="but1" class="flex items-center px-4 py-2 text-gray-700 hover:bg-blue-100 rounded transition">
+              <img src="{% static 'img/dashboard.png' %}" alt="Dashboard" class="w-5 h-5 mr-3" id="img1" />
+              <span id="txt1">Dashboard</span>
+            </a>
+          </li>
+          <li>
+            <a href="javascript:void(0)" onclick="click2()" id="but2" class="flex items-center px-4 py-2 text-gray-700 hover:bg-blue-100 rounded transition">
+              <img src="{% static 'img/summary.png' %}" alt="Summary" class="w-5 h-5 mr-3" id="img2" />
+              <span id="txt2">Summary</span>
+            </a>
+          </li>
+          <li>
+            <a href="javascript:void(0)" onclick="click3()" id="but3" class="flex items-center px-4 py-2 text-gray-700 hover:bg-blue-100 rounded transition">
+              <img src="{% static 'img/storage.png' %}" alt="Uploads" class="w-5 h-5 mr-3" id="img3" />
+              <span id="txt3">Upload's</span>
+            </a>
+          </li>
+          <li>
+            <a href="javascript:void(0)" onclick="click4()" id="but4" class="flex items-center px-4 py-2 text-gray-700 hover:bg-blue-100 rounded transition">
+              <img src="{% static 'img/user.png' %}" alt="Account" class="w-5 h-5 mr-3" id="img4" />
+              <span id="txt4">Account</span>
+            </a>
+          </li>
+          <button>
+          <a href="{% url 'custom' %}" onclick="click5()" id="but5" class="flex items-center px-4 py-2 text-gray-700 hover:bg-blue-100 rounded transition"> 
+            <img src="{% static 'img/log-out.png' %}" alt="Log Out" class="w-5 h-5 mr-3" id="img5" />
+            <span id="txt5">Custom Model</span>
+          </a>
+        </button>
+        <button>
+          <a href="{% url '8053' %}" onclick="click5()" id="but5" class="flex items-center px-4 py-2 text-gray-700 hover:bg-blue-100 rounded transition"> 
+            <img src="{% static 'img/log-out.png' %}" alt="Log Out" class="w-5 h-5 mr-3" id="img5" />
+            <span id="txt5">Gesture Recog</span>
+          </a>
+        </button>
+          <li>
+            <a href="/logout/" onclick="click5()" id="but5" class="flex items-center px-4 py-2 text-gray-700 hover:bg-blue-100 rounded transition">
+              <img src="{% static 'img/log-out.png' %}" alt="Log Out" class="w-5 h-5 mr-3" id="img5" />
+              <span id="txt5">Log Out</span>
+            </a>
+          </li>
+        </ul>
+      </nav>
+    </aside>
+    
+    <!-- Main Content Area -->
+    <div class="flex-1 flex flex-col">
+      <!-- Top Banner -->
+      <header class="bg-white shadow p-4 flex items-center justify-between">
+        <div class="flex items-center space-x-4">
+          <a href="javascript:void(0)" onclick="click1()" id="first" class="text-lg font-semibold text-gray-800">
+            Welcome, {{ first_name }}.
+          </a>
+          <span class="inline-flex items-center px-2 py-1 rounded bg-green-100 text-green-800 text-sm">
+            {% if user.userprofile.is_premium %}Premium{% else %}Free Tier{% endif %}
+          </span>
+          {% if user.userprofile.is_authenticated %}
+            <span class="badge {% if user.userprofile.is_premium %}badge-premium{% else %}badge-basic{% endif %} hidden"></span>
+          {% endif %}
+        </div>
+        <div class="flex items-center space-x-4">
+          <a href="javascript:void(0)" onclick="click2()" id="second" class="hover:text-blue-600">Summary</a>
+          <a href="javascript:void(0)" onclick="click3()" id="third" class="hover:text-blue-600">Upload's</a>
+          <a href="javascript:void(0)" onclick="click4()" id="fourth" class="hover:text-blue-600">Account</a>
+          <a href="#" id="fifth" class="hover:text-blue-600"></a>
+          <a href="javascript:void(0)" onclick="click4()">
+            <img src="{% static 'img/profile pic.png' %}" alt="Profile" class="w-10 h-10 rounded-full border-2 border-blue-500" />
+          </a>
+        </div>
+      </header>
+      
+      <!-- Content Sections -->
+      <main class="flex-1 p-6 relative">
+        <!-- Content 1: Dashboard -->
+        <section id="content1" class="mb-8">
+          <div class="mb-6">
+            <h1 class="text-2xl font-bold mb-4">Recent Summary's</h1>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+              {% for video in summary|slice:":4" %}
+              <a href="/summaryview/{{ video.id }}/" class="block bg-white rounded-lg shadow hover:shadow-lg transition">
+                <div class="h-32 bg-gray-200 rounded-t-lg"></div>
+                <div class="p-4">
+                  <h2 class="text-lg font-medium text-gray-800">{{ video.title }}</h2>
                 </div>
-              </div>
+              </a>
+              {% endfor %}
             </div>
-            <div class="box">
-              <div class="but ef" id="but3">
-                <div class="check"><img src="{% static 'img/storage.png' %}" id="img3" /></div>
-                <div class="word">
-                  <a href="javascript:void(0)" id="txt3" onclick="click3()"
-                    >Upload's</a
-                  >
-                </div>
-              </div>
-            </div>
-            <div class="box">
-              <div class="but gh" id="but4">
-                <div class="check"><img src="{% static 'img/user.png' %}" id="img4" /></div>
-                <div class="word">
-                  <a href="javascript:void(0)" id="txt4" onclick="click4()"
-                    >Account</a
-                  >
-                </div>
-              </div>
-            </div>
-            <div class="box">
-              <div class="but ij" id="but5">
-                <div class="check"><img src="{% static 'img/log-out.png' %}" id="img5" /></div>
-                <div class="word">
-                  <a href="/logout/" id="txt5" onclick="click5()"
-                    >Log Out</a
-                  >
-                </div>
+          </div>
+          <div>
+            <h1 class="text-2xl font-bold mb-4">Recent Upload's</h1>
+            <div class="bg-white rounded-lg shadow overflow-hidden">
+              <div class="divide-y divide-gray-200">
+                {% for video in videos|slice:":4" %}
+                <a href="{% url 'video_view' video_id=video.id %}" class="flex items-center px-4 py-2 hover:bg-blue-50 transition">
+                  <span class="mr-3 text-gray-600">{{ forloop.counter }}.</span>
+                  <span class="flex-1 text-gray-800">{{ video.title }}</span>
+                  <span class="text-gray-500">{{ video.upload_date|date:"F j, Y" }}</span>
+                </a>
+                {% endfor %}
               </div>
             </div>
           </div>
+          <!-- Floating Add Button -->
+          <a href="/upload/" class="fixed bottom-8 right-8 bg-blue-600 hover:bg-blue-700 text-white p-4 rounded-full shadow-lg">
+            <img src="{% static 'img/plus.png' %}" alt="Add" class="w-6 h-6" />
+          </a>
+        </section>
+        
+        <!-- Content 2: Summary -->
+        <!-- Content 2: Summary -->
+<section id="content2" class="hidden">
+    <div class="mb-6">
+      <div class="flex items-center justify-between mb-6">
+        <h1 class="text-2xl font-bold text-gray-800">Summaries</h1>
+        <div class="flex items-center space-x-4">
+          <span class="text-sm text-gray-500">{{ summary.count }} items</span>
+          <div class="w-px h-6 bg-gray-200"></div>
+          <button class="text-blue-600 hover:text-blue-800 text-sm font-medium">
+            Sort by Date <i class="fas fa-arrow-down ml-1"></i>
+          </button>
         </div>
       </div>
-      <div class="main_right">
-        <div class="banner">
-          <div class="banleft first" id="first"><a> Welcome, {{ first_name }}.</a></div>
-                            <div class="banleft second" id="second"><a> Summary</a></div>
-                            <div class="banleft third" id="third"><a> Upload's</a></div>
-                            <div class="banleft fourth" id="fourth"><a> Account</a></div>
-                            <div class="banleft fifth" id="fifth"> </div>
-
-                            <div class="profile" style="margin-right: 10px;">
-                                <a href="javascript:void(0)" onclick="click4()">
-                                    <img src="{% static 'img/profile pic.png' %}" />
-                                </a>
-                            </div>
-                        </div>
-
-                        <div class="content1" id="content1">
-                            <div class="uppercontent">
-                                <h1>Recent summary's</h1>
-                                <div class="container_top">
-                                    {% for video in summary|slice:":4" %}
-                                    <a href="/summaryview/{{video.id}}/">
-                                        <div class="card">
-                                            <div class="card_upper"></div>
-                                            <div class="card_lower">
-                                                <div class="heading">{{video.title}}</div>
-                                            </div>
-                                        </div>
-                                    </a>
-                                    {% endfor %}
-                                </div>
-                                <h1>Recent Upload's</h1>
-                                <div class="container_bottom">
-                                    <div class="list">
-                                        {% for video in videos|slice:":4" %}
-                                        <a href="{% url 'video_view' video_id=video.id %}">
-                                            <div class="list_item">
-
-                                                <div class="no">{{forloop.counter}}.</div>
-
-                                                <div class="file">{{video.title}}</div>
-                                                <div class="date">{{ video.upload_date|date:"F j, Y" }}</div>
-                                            </div>
-                                        </a>
-                                        {% endfor %}
-                                    </div>
-                                </div>
-                            </div>
-                            <a href="/upload/">
-                                <div class="add1"><img src="{% static 'img/plus.png' %}" /></div>
-                            </a>
-                        </div>
-
-                        <div class="content2" id="content2">
-                            <h1>Summary</h1>
-                            <div class="content2_container">
-                                {% for i in summary %}
-                                <a href="/summaryview/{{i.id}}/">
-                                    <div class="card">
-                                        <div class="card_upper"></div>
-                                        <div class="card_lower">
-                                            <div class="heading">{{i.title}}</div>
-                                        </div>
-                                    </div>
-                                </a>{% endfor %}
-                            </div>
-                            <a href="/upload/">
-                                <div class="add2"><img src="{% static 'img/plus.png' %}" /></div>
-                            </a>
-                        </div>
-
-                        <div class="content3" id="content3">
-                            <h1>Upload's</h1>
-
-                            <div class="content3_container">
-                                {% for video in videos %}
-                                <a href="{% url 'video_view' video_id=video.id %}">
-                                    <div class="list_item">
-
-                                        <div class="no">{{forloop.counter}}.</div>
-
-                                        <div class="file">{{video.title}}</div>
-                                        <div class="date">{{ video.upload_date|date:"F j, Y" }}</div>
-                                    </div>
-                                </a>{% endfor %}
-                            </div>
-                            <a href="/upload/">
-                                <div class="add2"><img src="{% static 'img/plus.png' %}" /></div>
-                            </a>
-                        </div>
-
-                        <div class="content4" id="content4">
-                            <h1>Details</h1>
-                            <a href="javascript:void(0)">
-                                <div class="content4_profile">
-                                    <img src="{% static 'img/user.png' %}" />
-                                </div>
-                            </a>
-                            <div class="seperate"></div>
-                            <div class="content4_container">
-                                <div class="field">
-                                    <div class="field_l"> Name: </div>
-                                    <div class="field_r"> {{first_name}} </div>
-                                </div>
-                                <div class="field">
-                                    <div class="field_l"> Email: </div>
-                                    <div class="field_r"> {{email}} </div>
-                                </div>
-                                <div class="field">
-                                    <div class="field_l"> Username: </div>
-                                    <div class="field_r"> {{username}} </div>
-                                </div>
-                                <div class="field">
-                                    <div class="field_l"> Password: </div>
-                                    <div class="field_r"> ******** </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="content5" id="content5"></div>
-                    </div>
-                </div>
-
-                <script src="{% static 'js/dashboard.js' %}"></script>
+      
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+        {% for item in summary %}
+        <a href="/summaryview/{{ item.id }}/" 
+           class="block bg-white rounded-xl shadow-md hover:shadow-lg transition-shadow duration-200 group">
+          <div class="w-60 h-40 bg-gray-100 rounded-t-xl relative overflow-hidden">
+            <!-- Add thumbnail/image content here if available -->
+            <div class="absolute inset-0 bg-gradient-to-t from-gray-900 via-transparent"></div>
+            <div class="absolute bottom-0 left-0 right-0 p-4">
+              <h3 class="text-white font-medium truncate">{{ item.title }}</h3>
+            </div>
+          </div>
+          <div class="p-4">
+            <div class="flex items-center justify-between text-sm">
+              <span class="text-gray-500">
+                <i class="far fa-clock mr-2"></i>{{ item.created_date|date:"M d, Y" }}
+              </span>
+              <span class="text-gray-500">
+                {{ item.word_count }} words
+              </span>
+            </div>
+            <div class="mt-3 flex items-center justify-between text-sm">
+              <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium 
+                        {% if item.status == 'complete' %}bg-green-100 text-green-800
+                        {% else %}bg-yellow-100 text-yellow-800{% endif %}">
+                {{ item.status|title }}
+              </span>
+              <button class="text-blue-600 hover:text-blue-800 opacity-0 group-hover:opacity-100 transition-opacity">
+                View <i class="fas fa-external-link-alt ml-1"></i>
+              </button>
+            </div>
+          </div>
+        </a>
+        {% endfor %}
+      </div>
+    </div>
+    
+    <!-- Floating Add Button -->
+    <a href="/upload/" class="fixed bottom-8 right-8 bg-blue-600 hover:bg-blue-700 text-white p-4 rounded-full shadow-xl transition-all duration-300 hover:scale-105">
+      <i class="fas fa-plus text-xl"></i>
+    </a>
+  </section>
+        
+        <!-- Content 3: Upload's -->
+       <!-- Content 3: Uploads -->
+<section id="content3" class="hidden">
+    <div class="mb-6">
+      <div class="flex items-center justify-between mb-6">
+        <h1 class="text-2xl font-bold text-gray-800">Uploads</h1>
+        <div class="flex items-center space-x-4">
+          <span class="text-sm text-gray-500">{{ videos.count }} items</span>
+          <div class="w-px h-6 bg-gray-200"></div>
+          <button class="text-blue-600 hover:text-blue-800 text-sm font-medium">
+            Sort by Date <i class="fas fa-arrow-down ml-1"></i>
+          </button>
+        </div>
+      </div>
+      
+      <div class="bg-white rounded-xl shadow-md overflow-hidden">
+        <div class="divide-y divide-gray-100">
+          {% for video in videos %}
+          <a href="{% url 'video_view' video_id=video.id %}" 
+             class="flex items-center px-6 py-4 hover:bg-blue-50 transition-colors duration-200 group">
+            <div class="w-8 flex-shrink-0">
+              <span class="text-gray-500 font-medium">{{ forloop.counter }}.</span>
+            </div>
+            <div class="flex-1 min-w-0">
+              <h3 class="text-base font-medium text-gray-800 truncate">{{ video.title }}</h3>
+              <div class="mt-1 flex items-center space-x-3">
+                <span class="text-sm text-gray-500">
+                  <i class="far fa-clock mr-1"></i>{{ video.upload_date|date:"M d, Y" }}
+                </span>
+                <span class="text-sm text-gray-500">
+                  <i class="fas fa-file-video mr-1"></i>{{ video.duration }} min
+                </span>
+              </div>
+            </div>
+            <div class="flex-shrink-0 ml-4">
+              <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
+                {{ video.file_size }} MB
+              </span>
+            </div>
+            <div class="flex-shrink-0 ml-4 opacity-0 group-hover:opacity-100 transition-opacity">
+              <i class="fas fa-chevron-right text-gray-400"></i>
+            </div>
+          </a>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+    
+    <!-- Floating Add Button -->
+    <a href="/upload/" class="fixed bottom-8 right-8 bg-blue-600 hover:bg-blue-700 text-white p-4 rounded-full shadow-xl transition-all duration-300 hover:scale-105">
+      <i class="fas fa-plus text-xl"></i>
+    </a>
+  </section>
+        
+        <!-- Content 4: Account Details -->
+       <!-- Content 4: Account Details -->
+<section id="content4" class="hidden">
+    <div class="max-w-3xl mx-auto">
+      <div class="flex flex-col items-center mb-8">
+        <div class="relative group">
+          <img src="{% static 'img/user.png' %}" alt="Profile" 
+               class="w-32 h-32 rounded-full border-4 border-white shadow-lg">
+          <button class="absolute bottom-0 right-0 bg-blue-600 hover:bg-blue-700 text-white p-2 rounded-full shadow-md transition-transform duration-300 hover:scale-105">
+            <i class="fas fa-pencil text-sm"></i>
+          </button>
+        </div>
+        <h2 class="text-2xl font-bold text-gray-800 mt-4">{{ first_name }}</h2>
+        <span class="text-gray-600">{{ email }}</span>
+      </div>
+  
+      <div class="bg-white rounded-xl shadow-md divide-y divide-gray-100">
+        <!-- Account Information -->
+        <div class="p-6">
+          <h3 class="text-lg font-semibold text-gray-800 mb-4">Account Information</h3>
+          <dl class="space-y-4">
+            <div class="flex items-center justify-between">
+              <dt class="text-gray-600">
+                <i class="fas fa-user mr-2"></i>Full Name
+              </dt>
+              <dd class="text-gray-800 font-medium">{{ first_name }} {{ last_name }}</dd>
+            </div>
+            <div class="flex items-center justify-between">
+              <dt class="text-gray-600">
+                <i class="fas fa-envelope mr-2"></i>Email Address
+              </dt>
+              <dd class="text-gray-800 font-medium flex items-center">
+                {{ email }}
+                <span class="ml-2 text-sm text-green-600">
+                  <i class="fas fa-check-circle"></i> Verified
+                </span>
+              </dd>
+            </div>
+            <div class="flex items-center justify-between">
+              <dt class="text-gray-600">
+                <i class="fas fa-user-tag mr-2"></i>Username
+              </dt>
+              <dd class="text-gray-800 font-medium">{{ username }}</dd>
+            </div>
+          </dl>
+        </div>
+  
+        <!-- Security Section -->
+        <div class="p-6">
+          <h3 class="text-lg font-semibold text-gray-800 mb-4">Security</h3>
+          <div class="flex items-center justify-between">
+            <div class="text-gray-600">
+              <i class="fas fa-lock mr-2"></i>Password
+            </div>
+            <button class="text-blue-600 hover:text-blue-800 font-medium">
+              Change Password
+            </button>
+          </div>
+        </div>
+  
+        <!-- Subscription Section -->
+        <div class="p-6">
+          <h3 class="text-lg font-semibold text-gray-800 mb-4">Subscription</h3>
+          <div class="flex items-center justify-between">
+            <div class="text-gray-600">
+              <i class="fas fa-{% if user.userprofile.is_premium %}crown{% else %}clock{% endif %} mr-2"></i>
+              Current Plan
+            </div>
+            <span class="px-3 py-1 rounded-full text-sm font-medium {% if user.userprofile.is_premium %}bg-purple-100 text-purple-800{% else %}bg-gray-100 text-gray-600{% endif %}">
+              {% if user.userprofile.is_premium %}Premium Member{% else %}Free Tier{% endif %}
+            </span>
+          </div>
+          {% if not user.userprofile.is_premium %}
+          <div class="mt-4">
+            <button class="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded-lg transition-colors duration-300">
+              Upgrade to Premium
+            </button>
+          </div>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </section>
+        
+        <!-- Content 5: Additional (if any) -->
+        <section id="content5" class="hidden">
+          <!-- Additional content can be added here -->
+        </section>
+      </main>
+    </div>
+  </div>
+  <script src="{% static 'js/dashboard.js' %}"></script>
 </body>
-
 </html>

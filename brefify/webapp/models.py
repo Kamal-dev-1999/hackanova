@@ -7,6 +7,7 @@ from django.utils import timezone
 
 
 class UserProfile(models.Model):
+    
    # user_id = models.IntegerField(primary_key=True)
     user = models.OneToOneField(User, on_delete=models.CASCADE, null=True, default=None)
     first_name = models.CharField(max_length=50,default='')
@@ -14,8 +15,21 @@ class UserProfile(models.Model):
     email = models.EmailField(default='')
     password = models.CharField(max_length=100,default='')
     video_file = models.FileField(upload_to="main/videos",default='default_value')
+    is_premium = models.BooleanField(default=False)  # New field: premium status
+    transcription_count = models.IntegerField(default=0)
+    last_transcription_date = models.DateTimeField(null=True, blank=True)
    # id = models.ObjectIdField(primary_key=True)
 
+    def can_transcribe(self):
+        if self.is_premium:
+            return True
+        return self.transcription_count < 3
+
+    def increment_transcription_count(self):
+        self.transcription_count += 1
+        self.last_transcription_date = timezone.now()
+        self.save()
+        
     def __str__(self):
         return self.username
     def register(self):
@@ -39,8 +53,8 @@ class UserProfile(models.Model):
   
         return False   
 
-    def __str__(self):
-       return self.user.username    
+    # def __str__(self):
+    #    return self.user.username    
 class Video(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, null=True, default=None)
     title = models.CharField(max_length=100)

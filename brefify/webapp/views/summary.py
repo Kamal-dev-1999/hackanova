@@ -7,6 +7,8 @@ from webapp.forms import VideoForm
 import whisper
 from django.http import HttpResponse
 import nltk
+# nltk.download('punkt_tab', force=True)
+
 from transformers import AutoTokenizer, AutoModelForSeq2SeqLM
 import subprocess
 def process_video(request, video_id):
@@ -22,8 +24,11 @@ def process_video(request, video_id):
     output_path_mp3 = os.path.join(settings.BASE_DIR, f'media/main/videos/{video.title}.mp3')
 
     # execute the ffmpeg command to convert video to mp3
-    command_mp3 = f"ffmpeg -i {input_path_mp3} {output_path_mp3}"
+    # command_mp3 = f"ffmpeg -i {input_path_mp3} {output_path_mp3}"
+    command_mp3 = f'ffmpeg -i "{input_path_mp3}" "{output_path_mp3}"'
     os.system(command_mp3)
+
+    # os.system(command_mp3)
 
 
     # Set the input and output file paths for transcription
@@ -38,6 +43,7 @@ def process_video(request, video_id):
     # Save the transcription to a file
     with open(output_path_transcription, 'w', encoding='utf-8') as file:
        file.write(transcript)
+       print()
 
 
     # Summarize the transcript
